@@ -42,6 +42,10 @@ Este repositório contém um exemplo prático dessa solução, ajudando a preven
 ## Aplicação
 Para esse laboratório foi desenvolvido um sistema de reservas de assentos.
 
-Problema de um sistema como esse é que 2 passageiros podem tentar reservar o mesmo assento ao mesmo.
+Problema de um sistema como esse é que 2 passageiros podem tentar reservar o mesmo assento ao mesmo enquanto o sistema faz o processamento dos demais dados como confirmação do pagamento, verificar se aquele assento tem alguma restrição (exemplo: primeira fila, apenas passageiros especiais podem reservar).
 
 ![](1-problema.png)
+
+A solução para esse problema é simples. O primeiro cliente que reservar o assento, bloqueia ele por 15 minutos. Tempo limite para confirmação do pagamento e validação de demais regras.
+
+![](2-solucao.png)
