@@ -49,3 +49,7 @@ Problema de um sistema como esse é que 2 passageiros podem tentar reservar o me
 A solução para esse problema é simples. O primeiro cliente que reservar o assento, bloqueia ele por 15 minutos. Tempo limite para confirmação do pagamento e validação de demais regras.
 
 ![](2-solucao.png)
+
+De forma técnica a solução consiste em um "distributed lock".
+
+![](3-solucao-tecnica.png)
