@@ -38,3 +38,10 @@ Para evitar esse tipo de problema, implementamos um **Distributed Lock** usando 
 - **Redis** como mecanismo de lock distribuído, garantindo que um assento não seja reservado por mais de um cliente ao mesmo tempo.
 
 Este repositório contém um exemplo prático dessa solução, ajudando a prevenir concorrência indesejada e garantindo um sistema de reservas mais seguro e confiável.
+
+## Aplicação
+Para esse laboratório foi desenvolvido um sistema de reservas de assentos.
+
+Problema de um sistema como esse é que 2 passageiros podem tentar reservar o mesmo assento ao mesmo.
+
+![](1-problema.png)
