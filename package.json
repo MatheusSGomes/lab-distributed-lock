@@ -1,0 +1,23 @@
+{
+  "name": "distributed_lock",
+  "version": "1.0.0",
+  "description": "Em sistemas distribuídos, o gerenciamento de acesso simultâneo a recursos compartilhados é um desafio crítico.",
+  "homepage": "https://github.com/MatheusSGomes/lab-distributed-lock#readme",
+  "bugs": {
+    "url": "https://github.com/MatheusSGomes/lab-distributed-lock/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatheusSGomes/lab-distributed-lock.git"
+  },
+  "license": "ISC",
+  "author": "Matheus Gomes",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "redis": "^4.7.0"
+  }
+}
