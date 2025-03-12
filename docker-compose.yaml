@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  redis_ds_lock:
+    container_name: redis_ds_lock
+    image: redis
+    ports:
+      - '6379:6379'
