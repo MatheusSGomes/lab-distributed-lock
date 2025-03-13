@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { MongoClient } from 'mongodb'
+import { Reserva } from "./Reserva.js";
 
 const clientRedis = await createClient()
     .on('error', err => console.log('Redis client error', err))
@@ -102,14 +103,6 @@ function salvarReserva() {
     })
 
     return new Reserva(nomePassageiro, reservaAssento)
-}
-
-class Reserva
-{
-    constructor(nome, assento) {
-        this.nome = nome;
-        this.assento = assento;
-    }
 }
 
 console.log("Tentativa de reservar assento: ", salvarReserva());
