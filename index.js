@@ -12,7 +12,7 @@ clientRedis.incr('contador');
 
 const value = await clientRedis.get('contador');
 
-console.log(value);
+// console.log(value);
 
 await clientRedis.disconnect();
 
@@ -69,9 +69,54 @@ async function apagar() {
 // editar();
 // inserir();
 // listar();
-apagar();
+// apagar();
 
 /*connect()
     .then(console.log)
     .catch(console.error)
      .finally(() => clientMongo.close()) */;
+
+const args = process.argv.slice(2);
+
+const ARG_PASSAGEIRO = "--passageiro";
+const ARG_ASSENTO = "--assento";
+
+function salvarReserva() {
+    let nomePassageiro = null;
+    let reservaAssento = null;
+
+    args.forEach(arg => {
+        const [key, value] = arg.split("=");
+
+        switch (key) {
+            case ARG_PASSAGEIRO:
+                nomePassageiro = value
+                break;
+
+            case ARG_ASSENTO:
+                reservaAssento = value
+                break;
+            default:
+                break;
+        }
+    })
+
+    return new Reserva(nomePassageiro, reservaAssento)
+}
+
+class Reserva
+{
+    constructor(nome, assento) {
+        this.nome = nome;
+        this.assento = assento;
+    }
+}
+
+console.log("Tentativa de reservar assento: ", salvarReserva());
+
+// Reservar um assento (a23)
+// Lock do assento por 15 minutos
+
+// Outro worker tenta reservar o mesmo assento (a23)
+// Recebe uma mensagem de erro (quando dentro dos 15 minutos)
+// Quando passados 15 minutos (faz nova tentativa, assento está disponível)
