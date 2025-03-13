@@ -34,14 +34,42 @@ async function connect() {
     }
 }
 
+async function inserir() {
+    const collection = await connect();
+    await collection.insertOne({ nome: "João", idade: 30 });
+    console.log("Registro inserido!");
+}
+
 async function listar() {
     const collection = await connect();
     const registros = await collection.find().toArray();
     console.log(registros);
 }
 
-listar();
+async function editar() {
+    const collection = await connect();
+    await collection.updateOne({ nome: "João" }, { $set: { idade: 31 } });
+    console.log("Registro atualizado!");
+}
 
+async function ler() {
+    const collection = await connect();
+    const registro = await collection.findOne({ nome: "João" });
+    console.log(registro);
+}
+
+async function apagar() {
+    const collection = await connect();
+    await collection.deleteOne({ nome: "João" });
+    console.log("Registro apagado!");
+}
+
+
+// ler();
+// editar();
+// inserir();
+// listar();
+apagar();
 
 /*connect()
     .then(console.log)
