@@ -6,17 +6,6 @@ const clientRedis = await createClient()
     .on('error', err => console.log('Redis client error', err))
     .connect();
 
-await clientRedis.set('contador', 0);
-clientRedis.incr('contador');
-clientRedis.incr('contador');
-clientRedis.incr('contador');
-
-const value = await clientRedis.get('contador');
-
-// console.log(value);
-
-await clientRedis.disconnect();
-
 const usuario = 'root';
 const senha = 'example';
 const host = 'localhost';
@@ -29,11 +18,47 @@ async function connect() {
     try {
         await clientMongo.connect();
         console.log('Mongo conectado com sucesso')
-        return clientMongo.db('meu_banco').collection('minha_colecao');
+        return clientMongo.db('meu_banco').collection('reservas');
     } catch (error) {
         console.error("Erro ao conectar", error);
     }
 }
+
+async function reservaAssento(numeroAssento) {
+    try {
+        const ttl = 60; // 60 segundos
+        const resource = `locks:reservation:${numeroAssento}`;
+
+        const value = await clientRedis.get(resource);
+        const assentoLock = value == "true";
+
+        if (assentoLock) {
+            throw new Error("Assento indisponível no momento");
+        }
+
+        // cria lock
+        await clientRedis.set(resource, "true", { EX: ttl, NX: true });
+
+        const collection = await connect();
+        const reserva = await collection.findOne({ nome: "Matheus", assento: numeroAssento });
+
+        if (reserva != null) {
+            throw new Error("Assento reservado");
+        }
+
+        const registro = await collection.insertOne({ nome: "Matheus", assento: numeroAssento });
+        console.log("Reserva realizada, id: ", registro.insertedId);
+
+    } catch (error) {
+        console.log("Falha ao reservar assento: ", error);
+    } finally {
+        await clientRedis.disconnect();
+        await clientMongo.close();
+    }
+}
+
+reservaAssento("c18")
+
 
 async function inserir() {
     const collection = await connect();
@@ -86,6 +111,10 @@ function salvarReserva() {
     let nomePassageiro = null;
     let reservaAssento = null;
 
+    if (args.length == 0) {
+        return null;
+    }
+
     args.forEach(arg => {
         const [key, value] = arg.split("=");
 
@@ -106,10 +135,3 @@ function salvarReserva() {
 }
 
 console.log("Tentativa de reservar assento: ", salvarReserva());
-
-// Reservar um assento (a23)
-// Lock do assento por 15 minutos
-
-// Outro worker tenta reservar o mesmo assento (a23)
-// Recebe uma mensagem de erro (quando dentro dos 15 minutos)
-// Quando passados 15 minutos (faz nova tentativa, assento está disponível)

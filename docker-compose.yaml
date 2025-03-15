@@ -10,7 +10,7 @@ services:
   mongodb_ds_lock:
     container_name: mongodb_ds_lock
     image: mongo
-    restart: always
+    # restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
