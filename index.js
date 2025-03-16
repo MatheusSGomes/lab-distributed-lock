@@ -13,7 +13,7 @@ const port = '27017';
 const url = `mongodb://${usuario}:${senha}@${host}:${port}`;
 const clientMongo = new MongoClient(url);
 await clientMongo.connect();
-var collection = clientMongo.db('meu_banco').collection('reservas');
+const collection = clientMongo.db('meu_banco').collection('reservas');
 
 async function tryMakeReservation(nomePassageiro, numeroAssento) {
     try {
@@ -46,6 +46,41 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
         await clientMongo.close();
     }
 }
+
+function initReservation() {
+    const args = process.argv.slice(2);
+
+    const ARG_PASSAGEIRO = "--passageiro";
+    const ARG_ASSENTO = "--assento";
+
+    let nomePassageiro = null;
+    let reservaAssento = null;
+
+    if (args.length == 0) {
+        return null;
+    }
+
+    args.forEach(arg => {
+        const [key, value] = arg.split("=");
+
+        switch (key) {
+            case ARG_PASSAGEIRO:
+                nomePassageiro = value
+                break;
+
+            case ARG_ASSENTO:
+                reservaAssento = value
+                break;
+            default:
+                break;
+        }
+    })
+
+    tryMakeReservation(nomePassageiro, reservaAssento);
+}
+
+initReservation()
+
 
 async function inserir() {
     await collection.insertOne({ nome: "João", idade: 30 });
@@ -83,36 +118,3 @@ async function apagar() {
     .then(console.log)
     .catch(console.error)
      .finally(() => clientMongo.close()) */;
-
-const args = process.argv.slice(2);
-
-const ARG_PASSAGEIRO = "--passageiro";
-const ARG_ASSENTO = "--assento";
-
-function initReservation() {
-    let nomePassageiro = null;
-    let reservaAssento = null;
-
-    if (args.length == 0) {
-        return null;
-    }
-
-    args.forEach(arg => {
-        const [key, value] = arg.split("=");
-
-        switch (key) {
-            case ARG_PASSAGEIRO:
-                nomePassageiro = value
-                break;
-
-            case ARG_ASSENTO:
-                reservaAssento = value
-                break;
-            default:
-                break;
-        }
-    })
-
-    tryMakeReservation(nomePassageiro, reservaAssento);
-}
-initReservation()
