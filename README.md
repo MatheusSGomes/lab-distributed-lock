@@ -1,5 +1,10 @@
 # Lab Distributed Lock
 
+Para fazer uma reserva:
+```bash
+node index.js --passageiro=João --assento=c13
+```
+
 ## Problema
 
 Em sistemas distribuídos, o gerenciamento de acesso simultâneo a recursos compartilhados é um desafio crítico.

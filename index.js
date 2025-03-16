@@ -1,6 +1,5 @@
 import { createClient } from "redis";
 import { MongoClient } from 'mongodb'
-import { Reserva } from "./Reserva.js";
 
 const clientRedis = await createClient()
     .on('error', err => console.log('Redis client error', err))
@@ -16,7 +15,7 @@ const clientMongo = new MongoClient(url);
 await clientMongo.connect();
 var collection = clientMongo.db('meu_banco').collection('reservas');
 
-async function reservaAssento(numeroAssento) {
+async function tryMakeReservation(nomePassageiro, numeroAssento) {
     try {
         const ttl = 60; // 60 segundos
         const resource = `locks:reservation:${numeroAssento}`;
@@ -31,15 +30,13 @@ async function reservaAssento(numeroAssento) {
         // cria lock
         await clientRedis.set(resource, "true", { EX: ttl, NX: true });
 
-        const reserva = await collection.findOne({ nome: "Matheus", assento: numeroAssento });
-
-        console.log('xyz', reserva)
+        const reserva = await collection.findOne({ nome: nomePassageiro, assento: numeroAssento });
 
         if (reserva != null) {
             throw new Error("Assento reservado");
         }
 
-        const registro = await collection.insertOne({ nome: "Matheus", assento: numeroAssento });
+        const registro = await collection.insertOne({ nome: nomePassageiro, assento: numeroAssento });
         console.log("Reserva realizada, id: ", registro.insertedId);
 
     } catch (error) {
@@ -49,9 +46,6 @@ async function reservaAssento(numeroAssento) {
         await clientMongo.close();
     }
 }
-
-reservaAssento("c17")
-
 
 async function inserir() {
     await collection.insertOne({ nome: "João", idade: 30 });
@@ -95,7 +89,7 @@ const args = process.argv.slice(2);
 const ARG_PASSAGEIRO = "--passageiro";
 const ARG_ASSENTO = "--assento";
 
-function salvarReserva() {
+function initReservation() {
     let nomePassageiro = null;
     let reservaAssento = null;
 
@@ -119,7 +113,6 @@ function salvarReserva() {
         }
     })
 
-    return new Reserva(nomePassageiro, reservaAssento)
+    tryMakeReservation(nomePassageiro, reservaAssento);
 }
-
-console.log("Tentativa de reservar assento: ", salvarReserva());
+initReservation()
