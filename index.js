@@ -13,16 +13,8 @@ const port = '27017';
 
 const url = `mongodb://${usuario}:${senha}@${host}:${port}`;
 const clientMongo = new MongoClient(url);
-
-async function connect() {
-    try {
-        await clientMongo.connect();
-        console.log('Mongo conectado com sucesso')
-        return clientMongo.db('meu_banco').collection('reservas');
-    } catch (error) {
-        console.error("Erro ao conectar", error);
-    }
-}
+await clientMongo.connect();
+var collection = clientMongo.db('meu_banco').collection('reservas');
 
 async function reservaAssento(numeroAssento) {
     try {
@@ -39,8 +31,9 @@ async function reservaAssento(numeroAssento) {
         // cria lock
         await clientRedis.set(resource, "true", { EX: ttl, NX: true });
 
-        const collection = await connect();
         const reserva = await collection.findOne({ nome: "Matheus", assento: numeroAssento });
+
+        console.log('xyz', reserva)
 
         if (reserva != null) {
             throw new Error("Assento reservado");
@@ -57,35 +50,30 @@ async function reservaAssento(numeroAssento) {
     }
 }
 
-reservaAssento("c18")
+reservaAssento("c17")
 
 
 async function inserir() {
-    const collection = await connect();
     await collection.insertOne({ nome: "João", idade: 30 });
     console.log("Registro inserido!");
 }
 
 async function listar() {
-    const collection = await connect();
     const registros = await collection.find().toArray();
     console.log(registros);
 }
 
 async function editar() {
-    const collection = await connect();
     await collection.updateOne({ nome: "João" }, { $set: { idade: 31 } });
     console.log("Registro atualizado!");
 }
 
 async function ler() {
-    const collection = await connect();
     const registro = await collection.findOne({ nome: "João" });
     console.log(registro);
 }
 
 async function apagar() {
-    const collection = await connect();
     await collection.deleteOne({ nome: "João" });
     console.log("Registro apagado!");
 }
