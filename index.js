@@ -24,7 +24,8 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
         const assentoLock = value == "true";
 
         if (assentoLock) {
-            throw new Error("Assento indisponível no momento");
+            console.log("Assento indisponível no momento");
+            return false;
         }
 
         // cria lock
@@ -33,12 +34,13 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
         const reserva = await collection.findOne({ nome: nomePassageiro, assento: numeroAssento });
 
         if (reserva != null) {
-            throw new Error("Assento reservado");
+            console.log("Assento reservado");
+            return false;
         }
 
         const registro = await collection.insertOne({ nome: nomePassageiro, assento: numeroAssento });
         console.log("Reserva realizada, id: ", registro.insertedId);
-
+        return true;
     } catch (error) {
         console.log("Falha ao reservar assento: ", error);
     } finally {
@@ -106,7 +108,6 @@ async function apagar() {
     await collection.deleteOne({ nome: "João" });
     console.log("Registro apagado!");
 }
-
 
 // ler();
 // editar();
