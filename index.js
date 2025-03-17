@@ -28,10 +28,10 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
             return false;
         }
 
-        // cria lock
+        // cria lock por 60 segundos
         await clientRedis.set(resource, "true", { EX: ttl, NX: true });
 
-        const reserva = await collection.findOne({ nome: nomePassageiro, assento: numeroAssento });
+        const reserva = await collection.findOne({ assento: numeroAssento });
 
         if (reserva != null) {
             console.log("Assento reservado");
@@ -47,6 +47,12 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
         await clientRedis.disconnect();
         await clientMongo.close();
     }
+}
+
+async function listReservationSeats() {
+    console.log("Assentos reservados: ");
+    const assentosReservados = await collection.find({}, { projection: { _id: 0, nome: 0 }}).sort({ assento: -1 }).toArray();
+    console.log(assentosReservados);
 }
 
 function initReservation() {
@@ -79,6 +85,7 @@ function initReservation() {
     })
 
     tryMakeReservation(nomePassageiro, reservaAssento);
+    listReservationSeats();
 }
 
 initReservation()
