@@ -15,9 +15,9 @@ export async function getReservationRepository(numeroAssento) {
         return await collection.findOne({ assento: numeroAssento });
     } catch (error) {
         console.log(error);
-    } finally {
+    } /* finally {
         await clientMongo.close();
-    }
+    } */
 }
 
 export async function registerReservationRepository(nomePassageiro, numeroAssento) {
@@ -25,9 +25,9 @@ export async function registerReservationRepository(nomePassageiro, numeroAssent
         await collection.insertOne({ nome: nomePassageiro, assento: numeroAssento });
     } catch (error) {
         console.log(error);
-    } finally {
+    } /* finally {
         await clientMongo.close();
-    }
+    } */
 }
 
 export async function getAllReservationsRepository() {
@@ -35,7 +35,7 @@ export async function getAllReservationsRepository() {
         return await collection.find({}, { projection: { _id: 0, nome: 0 } }).sort({ assento: -1 }).toArray();
     } catch (error) {
         console.log(error);
-    } finally {
+    } /* finally {
         await clientMongo.close();
-    }
+    } */
 }

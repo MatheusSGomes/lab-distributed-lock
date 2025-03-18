@@ -1,10 +1,5 @@
-import { createClient } from "redis";
-
 import { getAllReservationsRepository, getReservationRepository, registerReservationRepository } from "../repositories/reservationRepository.js";
-
-const clientRedis = await createClient()
-    .on('error', err => console.log('Redis client error', err))
-    .connect();
+import { lockSeatRepository, verifySeatIsLockedRepository } from "../repositories/lockRepository.js";
 
 export async function reservationService(nomePassageiro, numeroAssento) {
     try {
@@ -31,22 +26,16 @@ export async function reservationService(nomePassageiro, numeroAssento) {
 
 async function lockService(numeroAssento) {
     try {
-        const ttl = 60; // 60 segundos
-        const resource = `locks:reservation:${numeroAssento}`;
+        const seatIsLocked = verifySeatIsLockedRepository(numeroAssento);
 
-        const value = await clientRedis.get(resource);
-        const assentoLock = value == "true";
-
-        if (assentoLock) {
+        if (seatIsLocked) {
             return true;
         }
 
-        await clientRedis.set(resource, "true", { EX: ttl, NX: true }); // cria lock por 60 segundos
+        lockSeatRepository(resource);
         return false;
     } catch (error) {
         console.log("Erro ao reservar assento: ", error);
-    } finally {
-        await clientRedis.disconnect();
     }
 }
 
