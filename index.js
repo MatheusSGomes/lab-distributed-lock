@@ -1,3 +1,4 @@
+import readline from 'readline';
 import { createClient } from "redis";
 import { MongoClient } from 'mongodb'
 
@@ -24,7 +25,7 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
         const assentoLock = value == "true";
 
         if (assentoLock) {
-            console.log("Assento indisponível no momento");
+            console.log("Assento indisponível no momento, por favor, escolha outro");
             return false;
         }
 
@@ -34,7 +35,7 @@ async function tryMakeReservation(nomePassageiro, numeroAssento) {
         const reserva = await collection.findOne({ assento: numeroAssento });
 
         if (reserva != null) {
-            console.log("Assento reservado");
+            console.log("Assento já reservado, por favor, escolha outro");
             return false;
         }
 
@@ -56,73 +57,30 @@ async function listReservationSeats() {
 }
 
 function initReservation() {
-    const args = process.argv.slice(2);
+    let nomePassageiro, reservaAssento;
 
-    const ARG_PASSAGEIRO = "--passageiro";
-    const ARG_ASSENTO = "--assento";
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
 
-    let nomePassageiro = null;
-    let reservaAssento = null;
+    rl.question('Qual é o seu nome? ', function (name) {
+        console.log('Name: ', name)
+        nomePassageiro = name;
 
-    if (args.length == 0) {
-        return null;
-    }
+        rl.question('Assento desejado de A a G, de 1 a 23. Ex: g23? ', function (seat) {
+            console.log('Seat: ', seat, '\n')
+            reservaAssento = seat ;
+            rl.close();
+        })
+    });
 
-    args.forEach(arg => {
-        const [key, value] = arg.split("=");
+    rl.on('close', function () {
+        tryMakeReservation(nomePassageiro, reservaAssento);
+        listReservationSeats();
 
-        switch (key) {
-            case ARG_PASSAGEIRO:
-                nomePassageiro = value
-                break;
-
-            case ARG_ASSENTO:
-                reservaAssento = value
-                break;
-            default:
-                break;
-        }
-    })
-
-    tryMakeReservation(nomePassageiro, reservaAssento);
-    listReservationSeats();
+        // process.exit(0);
+    });
 }
 
 initReservation()
-
-
-async function inserir() {
-    await collection.insertOne({ nome: "João", idade: 30 });
-    console.log("Registro inserido!");
-}
-
-async function listar() {
-    const registros = await collection.find().toArray();
-    console.log(registros);
-}
-
-async function editar() {
-    await collection.updateOne({ nome: "João" }, { $set: { idade: 31 } });
-    console.log("Registro atualizado!");
-}
-
-async function ler() {
-    const registro = await collection.findOne({ nome: "João" });
-    console.log(registro);
-}
-
-async function apagar() {
-    await collection.deleteOne({ nome: "João" });
-    console.log("Registro apagado!");
-}
-
-// ler();
-// editar();
-// inserir();
-// listar();
-// apagar();
-
-/*connect()
-    .then(console.log)
-    .catch(console.error)
-     .finally(() => clientMongo.close()) */;
