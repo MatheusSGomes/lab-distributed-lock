@@ -1,18 +1,8 @@
-import { MongoClient } from 'mongodb';
-
-const usuario = 'root';
-const senha = 'example';
-const host = 'localhost';
-const port = '27017';
-
-const url = `mongodb://${usuario}:${senha}@${host}:${port}`;
-const clientMongo = new MongoClient(url);
-await clientMongo.connect();
-const collection = clientMongo.db('meu_banco').collection('reservas');
+import mongoConnection from "../infrastructure/mongoConnection.js";
 
 export async function getReservationRepository(numeroAssento) {
     try {
-        return await collection.findOne({ assento: numeroAssento });
+        return await mongoConnection.findOne({ assento: numeroAssento });
     } catch (error) {
         console.log(error);
     } /* finally {
@@ -22,7 +12,7 @@ export async function getReservationRepository(numeroAssento) {
 
 export async function registerReservationRepository(nomePassageiro, numeroAssento) {
     try {
-        await collection.insertOne({ nome: nomePassageiro, assento: numeroAssento });
+        return await mongoConnection.insertOne({ nome: nomePassageiro, assento: numeroAssento });
     } catch (error) {
         console.log(error);
     } /* finally {
@@ -32,7 +22,7 @@ export async function registerReservationRepository(nomePassageiro, numeroAssent
 
 export async function getAllReservationsRepository() {
     try {
-        return await collection.find({}, { projection: { _id: 0, nome: 0 } }).sort({ assento: -1 }).toArray();
+        return await mongoConnection.find({}, { projection: { _id: 0, nome: 0 } }).sort({ assento: -1 }).toArray();
     } catch (error) {
         console.log(error);
     } /* finally {

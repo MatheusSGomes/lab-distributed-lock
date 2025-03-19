@@ -16,8 +16,8 @@ export async function reservationService(nomePassageiro, numeroAssento) {
             return false;
         }
 
-        registerReservationRepository(nomePassageiro, numeroAssento);
-        console.log("Reserva realizada, id: ", registro.insertedId);
+        var registerSeat = registerReservationRepository(nomePassageiro, numeroAssento);
+        console.log("Reserva realizada, id: ", registerSeat);
         return true;
     } catch (error) {
         console.log("Falha ao reservar assento: ", error);
