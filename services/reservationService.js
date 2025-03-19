@@ -16,17 +16,18 @@ export async function reservationService(nomePassageiro, numeroAssento) {
             return false;
         }
 
-        var registerSeat = registerReservationRepository(nomePassageiro, numeroAssento);
-        console.log("Reserva realizada, id: ", registerSeat);
+        var registerSeat = await registerReservationRepository(nomePassageiro, numeroAssento);
+        console.log("Reserva realizada, id: ", registerSeat.insertedId);
         return true;
     } catch (error) {
         console.log("Falha ao reservar assento: ", error);
     }
 }
 
-async function lockService(numeroAssento) {
+async function lockService(seat) {
     try {
-        const seatIsLocked = verifySeatIsLockedRepository(numeroAssento);
+        const resource = `locks:reservation:${seat}`;
+        const seatIsLocked = verifySeatIsLockedRepository(resource);
 
         if (seatIsLocked) {
             return true;
