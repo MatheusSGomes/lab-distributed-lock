@@ -2,7 +2,7 @@
 
 Para fazer uma reserva:
 ```bash
-node index.js --passageiro=João --assento=c13
+node index.js
 ```
 
 ## Problema
