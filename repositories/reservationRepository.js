@@ -5,9 +5,7 @@ export async function getReservationRepository(numeroAssento) {
         return await mongoConnection.findOne({ assento: numeroAssento });
     } catch (error) {
         console.log(error);
-    } /* finally {
-        await clientMongo.close();
-    } */
+    }
 }
 
 export async function registerReservationRepository(nomePassageiro, numeroAssento) {
@@ -15,9 +13,7 @@ export async function registerReservationRepository(nomePassageiro, numeroAssent
         return await mongoConnection.insertOne({ nome: nomePassageiro, assento: numeroAssento });
     } catch (error) {
         console.log(error);
-    } /* finally {
-        await clientMongo.close();
-    } */
+    }
 }
 
 export async function getAllReservationsRepository() {
@@ -25,7 +21,5 @@ export async function getAllReservationsRepository() {
         return await mongoConnection.find({}, { projection: { _id: 0, nome: 0 } }).sort({ assento: -1 }).toArray();
     } catch (error) {
         console.log(error);
-    } /* finally {
-        await clientMongo.close();
-    } */
+    }
 }
